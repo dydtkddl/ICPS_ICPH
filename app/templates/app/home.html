@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>ICPS 계산기</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f1f1f1;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+            margin-top: 50px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .input-group input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+        }
+
+        .result-group {
+            margin-top: 20px;
+        }
+
+        .result-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .result-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            background-color: #f9f9f9;
+        }
+
+        .input-group.row {
+            display: flex;
+            align-items: center;
+        }
+
+        .input-group.row label {
+            margin-right: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>ICPS_ICPH 계산기</h1>
+        <div class="input-group">
+            <div class="row">
+                <label for="input-a">A:</label>
+                <input type="text" id="input-a" name="a" required>
+            </div>
+            <div class="row">
+                <label for="input-b">B x 10^3:</label>
+                <input type="text" id="input-b" name="b" required>
+            </div>
+            <div class="row">
+                <label for="input-c">C x 10^6:</label>
+                <input type="text" id="input-c" name="c" required>
+            </div>
+            <div class="row">
+                <label for="input-d">D x 10^-5:</label>
+                <input type="text" id="input-d" name="d" required>
+            </div>
+        </div>
+        <div class="input-group row">
+            <label for="input-t">T:</label>
+            <input type="text" id="input-t" name="t" required>
+            <label for="input-t0">T0:</label>
+            <input type="text" id="input-t0" name="t0" required>
+        </div>
+        <div class="input-group">
+            <label for="mode">모드:</label>
+            <input type="radio" id="icps-mode" name="mode" value="icps" checked>
+            <label for="icps-mode">ICPS</label>
+            <input type="radio" id="icph-mode" name="mode" value="icph">
+            <label for="icph-mode">ICPH</label>
+        </div>
+        <div class="input-group">
+            <input type="submit" value="계산" onclick="compute()">
+        </div>
+        <div class="result-group">
+            <label for="result">결과:</label>
+            <input type="text" id="result" name="result" readonly>
+        </div>
+    </div>
+</body>
+<script>
+
+    function compute() {
+        let mode = '';
+        let A = document.getElementById("input-a").value;
+        let B = document.getElementById("input-b").value;
+        let C = document.getElementById("input-c").value;
+        let D = document.getElementById("input-d").value;
+        let modes = document.getElementsByName("mode");
+        for (var mode_ of modes)
+    {
+        if (mode_.checked) {
+            mode = mode_.value;
+            console.log(mode_)
+        }
+    }
+        let T = document.getElementById("input-t").value;
+        let T0 = document.getElementById("input-t0").value;
+        console.log(A);
+        const ajax = fetch('/service/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                "X-CSRFToken": '{{csrf_token}}',
+            },
+            body: JSON.stringify({
+                "A":A,
+                "B":B,
+                "C":C,
+                "D":D,
+                "T":T,
+                "T0":T0,
+                "mode":mode
+            })
+        }).then((result) => result.json()).then(function (data) {
+            console.log(data);
+            document.getElementById("result").value = `${data[0]['value']} J/mol`
+        })
+
+    }
+
+</script>
+
+</html>
