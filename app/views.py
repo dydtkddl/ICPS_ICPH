@@ -15,7 +15,7 @@ def service(request):
     mode = json_['mode']
     T_ = float(json_['T'])
     T0_ = float(json_['T0'])
-    if request.POST.get('mode') == "icph":
+    if mode == "icph":
         expr = compute.get_ICPH(a,b,c,d)
         value = compute.compute_ICPH(expr,T0_,T_)
     else:
