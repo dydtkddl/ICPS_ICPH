@@ -5,17 +5,21 @@ from . import compute
 import json
 def home(request):
     return render(request, 'app/home.html')
+def out_zero(a):
+    if a == '':
+        a=0
+    return a
 def service(request):
     json_ = json.loads(request.body)
     print(json_)
-    a = float(json_['A'])
-    b = float(json_['B'])
-    c = float(json_['C'])
-    d = float(json_['D'])
+    a = float(out_zero(json_['A']))
+    b = float(out_zero(json_['B']))
+    c = float(out_zero(json_['C']))
+    d = float(out_zero(json_['D']))
     mode = json_['mode']
     T_ = float(json_['T'])
     T0_ = float(json_['T0'])
-    if request.POST.get('mode') == "icph":
+    if mode == "icph":
         expr = compute.get_ICPH(a,b,c,d)
         value = compute.compute_ICPH(expr,T0_,T_)
     else:

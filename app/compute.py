@@ -20,10 +20,10 @@ def compute_ICPS(expr, T0, T_):
     print("ICPS계산")
     value = sy.integrate(expr ,( T, T0 ,T_))
     return value
-def compute_ICPH(expr, T0 ,T):
+def compute_ICPH(expr, T0 ,T_):
     T = sy.Symbol("T")
     print("ICPH계산")
-    value = sy.integrate(expr ,( T, T0 ,T))
+    value = sy.integrate(expr ,( T, T0 ,T_))
     return value
 
 
