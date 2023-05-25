@@ -1,3 +1,5 @@
+{%load static%}
+
 <!DOCTYPE html>
 <html>
 
@@ -11,10 +13,36 @@
             font-family: Arial, sans-serif;
             background-color: #f1f1f1;
         }
-
         .container {
             margin: 0 auto;
         }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .sub_info {
+            display: flex;
+            justify-content: space-between; /* 수정: 왼쪽과 오른쪽 사이의 공간을 최대한 확보 */
+            align-items: center; /* 수정: 세로 중앙 정렬 */
+            margin-bottom: 20px;
+        }
+
+        .left {
+            flex-grow: 1;
+        }
+
+        .right {
+            display: flex;
+            align-items: center;
+        }
+
+        .like-button {
+            text-decoration: none;
+        }
+
+
 
         h1 {
             text-align: center;
@@ -71,6 +99,15 @@
             margin-right: 5px;
         }
 
+        .info {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+  
+        .center{
+            text-align:center;
+        }
         /* 핸드폰 버전 스타일 */
         @media screen and (max-width: 600px) {
             .container {
@@ -100,23 +137,41 @@
         }
     </style>
 </head>
-
 <body>
     <div class="container">
-        <h1>ICPS_ICPH 계산기</h1>
-        <p align="center"><strong>made by YongSang</strong></p>
-	<p>과제할 때 계산하기 귀찮아서 만듦</p>        
-	<div>설명 : 모드가 두가지가 있는데,
-<br>ICPH계산은 R*∫(Cp/R)dT을
-<br>ICPS계산은 R* ∫(Cp/RT)dT를 계산해줌.</div>
-<div class="input-group">
+        <div class="info">
+            <div class="center">
+                <h2>ICPS_ICPH계산기</h2>
+                <p><strong>made by YongSang</strong></p>
+            </div>
+            <div class="sub_info">
+                <div class="left">
+                    <p>과제할 때 계산하기 귀찮아서 만듦</p>
+                    <div>설명: 모드가 두 가지 있는데,<br>ICPH 계산은 R*∫(Cp/R)dT을<br>ICPS 계산은 R*∫(Cp/RT)dT를 계산해줌.</div>
+                    <br>
+                </div>
+                <div class="right"style="margin-right:50px">
+                    
+                    <div style="display:flex; flex-direction: column;">
+                        <a href="#" onclick="like()" class="like-button">
+                            <img style="width: 100px" src="{% static 'img/like.png' %}" alt="">
+                        </a>
+                        <span>오늘 방문자 수 + 좋아요수</span>
+                        <input type="text" id="like_count" readonly>
+                        <label for="like_count_all">전체 방문자 수 + 좋아요수</label>
+                        <input type="text" id="like_count_all" readonly>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="input-group">
             <div class="row">
                 <label for="input-a">A:</label>
                 <input type="text" id="input-a" name="a" required>
             </div>
             <div class="row">
                 <label for="input-b">B x 10^3:</label>
-  <input type="text" id="input-b" name="b" required>
+                <input type="text" id="input-b" name="b" required>
             </div>
             <div class="row">
                 <label for="input-c">C x 10^6:</label>
@@ -148,48 +203,56 @@
             <input type="text" id="result" name="result" readonly>
         </div>
     </div>
-   
-<script>
 
-    function compute() {
-        let mode = '';
-        let A = document.getElementById("input-a").value;
-        let B = document.getElementById("input-b").value;
-        let C = document.getElementById("input-c").value;
-        let D = document.getElementById("input-d").value;
-        let modes = document.getElementsByName("mode");
-        for (var mode_ of modes)
-    {
-        if (mode_.checked) {
-            mode = mode_.value;
-            console.log(mode_)
-        }
-    }
-        let T = document.getElementById("input-t").value;
-        let T0 = document.getElementById("input-t0").value;
-        console.log(A);
-        const ajax = fetch('/service/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                "X-CSRFToken": '{{csrf_token}}',
-            },
-            body: JSON.stringify({
-                "A":A,
-                "B":B,
-                "C":C,
-                "D":D,
-                "T":T,
-                "T0":T0,
-                "mode":mode
+    <script>
+        like()
+        function compute() {
+            let mode = '';
+            let A = document.getElementById("input-a").value;
+            let B = document.getElementById("input-b").value;
+            let C = document.getElementById("input-c").value;
+            let D = document.getElementById("input-d").value;
+            let modes = document.getElementsByName("mode");
+            for (var mode_ of modes) {
+                if (mode_.checked) {
+                    mode = mode_.value;
+                    console.log(mode_)
+                }
+            }
+            let T = document.getElementById("input-t").value;
+            let T0 = document.getElementById("input-t0").value;
+            console.log(A);
+            const ajax = fetch('/service/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    "X-CSRFToken": '{{csrf_token}}',
+                },
+                body: JSON.stringify({
+                    "A": A,
+                    "B": B,
+                    "C": C,
+                    "D": D,
+                    "T": T,
+                    "T0": T0,
+                    "mode": mode
+                })
+            }).then((result) => result.json()).then(function (data) {
+                console.log(data);
+                document.getElementById("result").value = `${data[0]['value']} J/mol`
             })
-        }).then((result) => result.json()).then(function (data) {
-            console.log(data);
-            document.getElementById("result").value = `${data[0]['value']} J/mol`
-        })
 
-    }
-
-</script>
+        }
+        function like(){
+            const ajax = fetch("/like/").then(
+            (result)=>result.json()).then(function(data){
+                console.log(data);
+                let like_count_today = data[0].today_like;
+                let like_count_allday = data[0].all;
+                document.getElementById('like_count').value = like_count_today;
+                document.getElementById('like_count_all').value = like_count_allday;
+            })
+        }
+    </script>
 
 </html>
